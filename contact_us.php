@@ -42,6 +42,42 @@ Author:   Webstrot
 	<link href='../../../../api.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.css' rel='stylesheet' />
     <!-- favicon link-->
     <link rel="shortcut icon" type="image/icon" href="images/favicon.png" />
+    <script>
+        $(document).ready(function(e) {
+            $("#contactform").on('submit', (function(e) {
+                e.preventDefault();
+                $("#mail-status").hide();
+                $('#send-message').hide();
+                $('#loader-icon').show();
+                $("#contactform").show();
+                $.ajax({
+                    url: "./php/conactmail.php",
+                    type: "POST",
+                    dataType: 'json',
+                    data: {
+                        "name": $('input[name="name"]').val(),
+                        "email": $('input[name="email"]').val(),
+                        "phone": $('input[name="phone"]').val(),
+                        "comments": $('textarea[name="comments"]').val(),
+                        "g-recaptcha-response": $('textarea[id="g-recaptcha-response"]').val()
+                    },
+                    success: function(response) {
+                        $("#mail-status").show();
+                        $('#loader-icon').hide();
+                        if (response.type == "error") {
+                            $('#send-message').show();
+                            $("#mail-status").attr("class", "error");
+                        } else if (response.type == "message") {
+                            $('#send-message').hide();
+                            $("#mail-status").attr("class", "success");
+                        }
+                        $("#mail-status").html(response.text);
+                    },
+                    error: function() {}
+                });
+            }));
+        });
+    </script>
 </head>
 
 <body>
@@ -393,36 +429,42 @@ Author:   Webstrot
             <div class="holder">
                 <div class=" row">
                     <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                        <form novalidate="novalidate" action="" name="contactform" id="contactform" method="POST">
-                            <div class="sw_left_heading_wraper">
-                                <h1>Feel Free To Contact Us</h1>
-                                <img src="images/heading_line.png" alt="title">
-                                <!-- <p>Donec quis magna sit amet risus vulputate maximus eget eget arcu. -->
-                                    <!-- <br> Praesent sed molestie tortor. </p> -->
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="text" name="name" placeholder="Name*" class="require">
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="text" autocomplete="false" name="email" placeholder="Email*" class="require" data-valid="email" data-error="Email should be valid.">
-                                </div>
-                                <div class="col-md-12">
-                                    <input type="text" name="phone" placeholder="subject">
-                                </div>
+                    <form method="POST" novalidate="novalidate" action="" name="contactform" id="contactform">
+                            <div class="cont_main_section">
 
-                                <div class="col-md-12">
-                                    <textarea cols="10" rows="4" name="comments" class="require" placeholder="Message*"></textarea>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="contect_form1">
+                                        <input type="text" name="name" placeholder="Name*" class="require">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="contect_form1">
+                                        <input type="email" name="email" placeholder="Email*" class="require"
+                                            data-valid="email" data-error="Email should be valid.">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="contect_form1">
+                                        <input type="text" name="phone" placeholder="Subject">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="contect_form4">
+                                        <textarea rows="5" name="comments" placeholder="Message"
+                                            class="require"></textarea>
+                                    </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="g-recaptcha" data-sitekey="6Le667QUAAAAAMkL14M8MFJ6SJ3XkebLXfARGcS3"></div>
-                                <div id="mail-status"></div>
-                                    <div class="cntct_2_btn_wrapper cntct_2_btn_inner">
-                                        <button type="button" class="submitForm waves-effect waves-light waves-ripple">send</button>
+                                    <div class="response" id="mail-status"></div>
+                                    <div class="cntct_2_btn_wrapper">
+                                        <button type="submit"
+                                            class="submitForm waves-effect waves-light waves-ripple" id="send-message" style="clear:both;" value="SEND MESSAGE" >send</button>
                                     </div>
                                 </div>
                             </div>
                         </form>
+                        <div id="loader-icon" style="display:none;"><img src="images/LoaderIcon.gif" /></div>
                     </div>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 
